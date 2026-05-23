@@ -1,0 +1,18 @@
+{
+  "inference_engine": "ollama",
+  "endpoint_configuration": {
+    "base_url": "http://localhost:11434/api",
+    "timeout_seconds": 30,
+    "max_retries": 3
+  },
+  "agent_model_mapping": {
+    "orchestrator_agent": "llama3.1:latest",
+    "trajectory_agent": "codellama:7b-code",
+    "governance_agent": "mistral:latest"
+  },
+  "engine_parameters": {
+    "temperature": 0.0,
+    "num_ctx": 4096,
+    "stop_tokens": ["<EOT>", "MASTER_PULSE_HALT"]
+  }
+}
