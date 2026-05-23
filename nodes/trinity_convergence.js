@@ -17,15 +17,15 @@ function startCloudMeshLoop() {
 
     function runPulse() {
         const now = process.hrtime.bigint();
-        
+
         if (now > nextTick) {
             const slipMs = Number(now - nextTick) / 1000000;
-            
+
             if (slipMs > 2.0) { // Tolerated drift buffer before penalty
                 jitterBucket += 1.0;
                 console.warn(`[CLOUD LAG DETECTED] Slip: +${slipMs.toFixed(2)}ms. Bucket: ${jitterBucket}/${MAX_JITTER_ALLOWED}`);
             }
-            
+
             if (jitterBucket >= MAX_JITTER_ALLOWED) {
                 console.error(`[FATAL] Cloud jitter threshold breached. Tripping zero-grace-period kill.`);
                 process.exit(1); // Force-terminates process tree for flame_swarm_orchestrator containment
@@ -33,14 +33,14 @@ function startCloudMeshLoop() {
         } else {
             // Gradually bleed off the jitter debt during perfectly timed frames
             if (jitterBucket > 0) jitterBucket = Math.max(0, jitterBucket - 0.1);
-            
+
             // Fractional nano-window catch up
             while (process.hrtime.bigint() < nextTick) {}
         }
 
         // --- Core Node Logic Execution Area ---
         // Insert processing hooks here (Keep runtime under 3ms for safety headroom)
-        
+
         nextTick += INTERVAL_NS;
         setImmediate(runPulse);
     }
