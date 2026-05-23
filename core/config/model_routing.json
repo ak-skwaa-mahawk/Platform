@@ -1,18 +1,48 @@
 {
-  "inference_engine": "ollama",
-  "endpoint_configuration": {
-    "base_url": "http://localhost:11434/api",
-    "timeout_seconds": 30,
-    "max_retries": 3
+  "inference_engine_topology": "HYBRID_ASYMMETRIC",
+  "global_timing_budget_ms": 12.65,
+  "engines": {
+    "high_frequency_vllm": {
+      "base_url": "http://localhost:8000/v1",
+      "api_key": "sk-vllm-local-orchestration-token",
+      "timeout_seconds": 0.006
+    },
+    "deep_reasoning_ollama": {
+      "base_url": "http://localhost:11434/api",
+      "timeout_seconds": 45.0
+    }
   },
   "agent_model_mapping": {
-    "orchestrator_agent": "llama3.1:latest",
-    "trajectory_agent": "codellama:7b-code",
-    "governance_agent": "mistral:latest"
-  },
-  "engine_parameters": {
-    "temperature": 0.0,
-    "num_ctx": 4096,
-    "stop_tokens": ["<EOT>", "MASTER_PULSE_HALT"]
+    "trajectory_agent": {
+      "engine": "high_frequency_vllm",
+      "model": "deepseek-coder-1.3b-instruct",
+      "execution_priority": "CRITICAL_PATH",
+      "parameters": {
+        "max_tokens": 32,
+        "temperature": 0.0,
+        "presence_penalty": 0.0,
+        "gpu_memory_utilization": 0.35
+      }
+    },
+    "governance_agent": {
+      "engine": "high_frequency_vllm",
+      "model": "qwen2.5-1.5b-instruct",
+      "execution_priority": "INTERCEPTOR",
+      "parameters": {
+        "max_tokens": 64,
+        "temperature": 0.0,
+        "num_ctx": 1024
+      }
+    },
+    "orchestrator_agent": {
+      "engine": "deep_reasoning_ollama",
+      "model": "llama3.1:8b-instruct-q4_K_M",
+      "execution_priority": "ASYNCHRONOUS_COGNITION",
+      "parameters": {
+        "num_ctx": 4096,
+        "temperature": 0.3,
+        "stop_tokens": ["<EOT>", "MASTER_PULSE_HALT"]
+      }
+    }
   }
 }
