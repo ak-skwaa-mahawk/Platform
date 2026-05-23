@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import numpy as np
 
 class OctagonalFPTAgent:
@@ -8,7 +9,7 @@ class OctagonalFPTAgent:
         state = np.array(current_state, dtype=np.float32)
         task = np.array(task_vector, dtype=np.float32)
 
-        # Dynamic calculation step
+        # Execute mass-preserving state optimization step
         stabilized_state = np.maximum(state + (task * self.phase_bias), 0.0)
         magnitude = np.sum(stabilized_state)
         
