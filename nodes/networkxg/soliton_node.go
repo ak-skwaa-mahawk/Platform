@@ -1,37 +1,78 @@
-// nodes/networkxg/soliton_node.go — Soliton Wave Propagation Network Node
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"math/rand"
 	"os"
-	"os_signal"
-	"syscall"
 	"time"
 )
 
-func main() {
-	fmt.Println("🌊 SOLITON PROPAGATION ENGINE ACTIVE — GO RUNTIME UNLOCKED")
+const (
+	TargetHz         = 79.0
+	IntervalNs       = int64(1000000000 / TargetHz) // ~12,658,227 ns per tick
+	MaxAllowedDrift  = 3.5                          // Max tolerable cloud lag in milliseconds
+	MaxDriftStrikes  = 4                            // Consecutive hypervisor pauses allowed
+)
 
-	// Set up internal channel monitoring to handle clean shutdowns from Python master
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+type TelemetryPacket struct {
+	TickID    int64   `json:"tick_id"`
+	WaveData  []float64 `json:"wave_data"`
+	Timestamp int64   `json:"timestamp_ns"`
+}
 
-	ticker := time.NewTicker(1500 * time.Millisecond)
-	step := 0
+func StartSolitonNode() {
+	ticker := time.NewTicker(time.Duration(IntervalNs))
+	defer ticker.Stop()
 
-	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				amplitude := 1.0 + rand.Float64()*0.25
-				velocity := 0.88 + rand.Float64()*0.05
-				fmt.Printf("[SOLITON] Wave Node %d | Amplitude: %.4f | Velocity Phase: %.3f m/s\n", step, amplitude, velocity)
-				step++
+	var consecutiveStrikes int
+	var tickCounter int64
+
+	fmt.Println("[Go Engine] Soliton wave propagation node initialized with Cloud Sliding-Clock mechanics.")
+
+	for range ticker.C {
+		tickCounter++
+		startTime := time.Now().UnixNano()
+
+		// 1. Process wave trajectory math
+		err := executeWaveCalculations()
+		if err != nil {
+			fmt.Printf("[GO ERROR] Processing collision: %v\n", err)
+			continue
+		}
+
+		// 2. Measure performance delta against cloud hypervisor scheduling
+		endTime := time.Now().UnixNano()
+		executionDurationMs := float64(endTime-startTime) / 1000000.0
+		actualIntervalMs := float64(IntervalNs) / 1000000.0
+
+		// Check if the runtime plus cloud schedule lag breached the safe window
+		if executionDurationMs > actualIntervalMs {
+			driftDelta := executionDurationMs - actualIntervalMs
+			
+			if driftDelta > MaxAllowedDrift {
+				consecutiveStrikes++
+				fmt.Printf("[GO CLOUD WARNING] Soliton window expansion! Drift: +%.2fms. Strike: %d/%d\n", 
+					driftDelta, consecutiveStrikes, MaxDriftStrikes)
+			}
+
+			if consecutiveStrikes >= MaxDriftStrikes {
+				fmt.Println("[FATAL GO BREACH] Cloud desynchronization cascade. Tripping containment signal.")
+				os.Exit(1) // Triggers the zero-grace-period kill switch on the python orchestrator
+			}
+		} else {
+			// Slowly decay the strict strike count when server performance normalizes
+			if consecutiveStrikes > 0 {
+				consecutiveStrikes--
 			}
 		}
-	}()
+	}
+}
 
-	<-sigs
-	fmt.Println("[SOLITON] Releasing active channel arrays. Exiting.")
+func executeWaveCalculations() error {
+	// Custom Go wave optimization logic goes here
+	return nil
+}
+
+func main() {
+	StartSolitonNode()
 }
