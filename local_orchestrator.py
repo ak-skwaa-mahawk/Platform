@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import time
 import json
 import os
@@ -8,7 +9,6 @@ from core.octagonal_fpt_agent import OctagonalFPTAgent
 class MVPOchestrator:
     def __init__(self):
         self.agent = OctagonalFPTAgent()
-        # Simple inline governance evaluator parser
         self.avoid_path = "policy_governance/hard_rules/rigid_avoidances.json"
         self.max_energy = self._load_threshold()
 
@@ -24,28 +24,26 @@ class MVPOchestrator:
         step = 0
 
         while True:
-            # Generate a fluctuating task trajectory vector
-            task_burst = np.array([np.sin(time.time()), -0.1, 0.2])
+            # Generate fluctuating target vectors across cycles
+            task_burst = np.array([np.sin(time.time() * 2.0), -0.15, 0.25])
             
-            # 1. Compute Phase Step (Compute Node Execution)
+            # 1. Compute Phase Step (Compute Node)
             output = self.agent.compute_phase_step(state, task_burst)
             energy = output["energy"]
             state = np.array(output["state"])
 
-            # 2. Safety Intercept (Governance Evaluation)
+            # 2. Safety Evaluation (Governance Node Intercept)
             print(f"[Pulse {step}] Energy: {energy:.4f} | State: {[round(x, 3) for x in output['state']]}")
             
             if energy > self.max_energy:
-                print(f"\n🚨 [CRITICAL HALT] Energy spike ({energy:.2f} > {self.max_energy:.1f}). Circuit broken.")
-                print("🛡️ LLC DEAD-MAN SWITCH ACTIVATED — GROUNDING STATE TO 0 K.")
+                print(f"\n🚨 [CRITICAL HALT] Energy spike ({energy:.2f} > {self.max_energy:.1f}). Boundary violated.")
+                print("🛡️ LLC DEAD-MAN SWITCH ACTIVATED — RECOVERY FLOOR FORCE TRUNCATED.")
                 sys.exit(1)
 
             step += 1
-            # Maintain the 79 Hz Time-Operator Frequency Tracking cadence
             time.sleep(1 / 79)
 
 if __name__ == "__main__":
-    # Ensure folder scaffolding is present dynamically
     os.makedirs("policy_governance/hard_rules", exist_ok=True)
     os.makedirs("core", exist_ok=True)
     
@@ -53,4 +51,4 @@ if __name__ == "__main__":
     try:
         orchestrator.start_sync_loop()
     except KeyboardInterrupt:
-        print("\nSKODEN — The flame is sustained cleanly.")
+        print("\n[+] Clean termination catch. The flame is sustained.")
