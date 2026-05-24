@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skoden Injin • EMPIRICAL_v3</title>
+    <title>Skoden Injin • EMPIRICAL_v3.2</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
         
@@ -13,28 +13,25 @@
             background: #02040a;
             color: #e2e8f0;
             font-family: 'Inter', system-ui, sans-serif;
-            overflow: hidden;
         }
 
         #skoden-unified-system {
-            max-width: 620px;
-            margin: 20px auto;
+            max-width: 640px;
+            margin: 12px auto;
             background: radial-gradient(circle at center, #0a0f1c 0%, #02040a 100%);
             border: 1px solid #1e2937;
             border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.95);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.95);
             overflow: hidden;
         }
 
         .header {
-            background: #0f172a;
-            padding: 16px 20px;
+            background: linear-gradient(90deg, #0f172a, #1e2937);
+            padding: 14px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            user-select: none;
-            border-bottom: 1px solid #1e2937;
         }
 
         .header-left {
@@ -56,25 +53,22 @@
             height: 8px;
             background: #22ffcc;
             border-radius: 50%;
-            box-shadow: 0 0 10px #22ffcc;
-            animation: pulse 2s infinite;
+            box-shadow: 0 0 12px #22ffcc;
+            animation: pulse 1.8s infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
+        @keyframes pulse { 0%,100% {opacity:1} 50% {opacity:0.4} }
 
         .terminal {
-            background: rgba(3, 7, 18, 0.98);
+            background: rgba(3,7,18,0.98);
             border: 1px solid #1e2937;
             border-radius: 10px;
-            padding: 16px;
-            height: 240px;
+            padding: 18px;
+            height: 260px;
             overflow-y: auto;
-            font-family: 'Space Grotesk', monospace;
-            font-size: 13.5px;
-            line-height: 1.65;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.55;
             color: #cbd5e1;
             white-space: pre-wrap;
         }
@@ -85,7 +79,7 @@
             border: 1px solid #334155;
             border-radius: 9999px;
             padding: 6px 8px 6px 20px;
-            margin-top: 12px;
+            margin: 12px 16px;
         }
 
         .input-capsule input {
@@ -98,17 +92,36 @@
         }
 
         .execute-btn {
-            background: #22ffcc;
+            background: linear-gradient(#22ffcc, #11ddaa);
             color: #0f172a;
             border: none;
-            width: 38px;
-            height: 38px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
-            font-size: 18px;
+            font-size: 20px;
             cursor: pointer;
+        }
+
+        .footer {
             display: flex;
-            align-items: center;
-            justify-content: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            font-size: 11px;
+            font-family: monospace;
+            color: #64748b;
+            border-top: 1px solid #1e2937;
+        }
+
+        .theme-switcher {
+            display: flex;
+            gap: 6px;
+        }
+
+        .theme-btn {
+            padding: 4px 10px;
+            font-size: 10px;
+            border-radius: 9999px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -117,9 +130,9 @@
 <div id="skoden-unified-system">
     <div class="header" onclick="toggleSystemWorkspace()">
         <div class="header-left">
-            <span style="color:#22ffcc; font-size:18px;">🔥</span>
+            <span style="color:#22ffcc; font-size:20px;">🔥</span>
             <span style="font-weight:600; letter-spacing:0.5px;">Skoden Injin</span>
-            <span style="font-size:10px; background:#1e2937; padding:2px 8px; border-radius:9999px; color:#64748b;">EMPIRICAL_v3</span>
+            <span style="font-size:10px; background:#1e2937; padding:2px 8px; border-radius:9999px; color:#64748b;">EMPIRICAL_v3.2</span>
         </div>
         <div class="status">
             <span class="dot"></span>
@@ -129,9 +142,9 @@
 
     <div id="system-expansion-drawer" style="padding:18px;">
         <div id="main-conversation-stream" class="terminal">
-&gt;&gt; Platform core handshake verified.<br>
-&gt;&gt; Variational manifold synchronized.<br>
-&gt;&gt; Awaiting sovereign directive...
+>> Platform core handshake verified.<br>
+>> Variational manifold synchronized.<br>
+>> Awaiting sovereign directive...
         </div>
 
         <div class="input-capsule">
@@ -139,7 +152,7 @@
             <button class="execute-btn" onclick="sendCommand()">➔</button>
         </div>
 
-        <div style="display:flex; justify-content:space-between; font-size:11px; color:#64748b; margin-top:12px; font-family:monospace;">
+        <div class="footer">
             <span>CLOCK: <span style="color:#22ffcc;">79.0 Hz</span></span>
             <span>FLOOR: <span id="energy-val" style="color:#60a5fa;">0.0000 K</span></span>
             <span>GOV: <span id="gov-verdict" style="color:#34d399;">EMPIRICAL</span></span>
@@ -149,14 +162,13 @@
 
 <script>
     let chatHistory = [];
-    let isExpanded = true;
 
     function toggleSystemWorkspace() {
-        isExpanded = !isExpanded;
-        document.getElementById('system-expansion-drawer').style.display = isExpanded ? 'block' : 'none';
+        const drawer = document.getElementById('system-expansion-drawer');
+        drawer.style.display = drawer.style.display === 'none' ? 'block' : 'none';
     }
 
-    async function sendCommand() {
+    function sendCommand() {
         const input = document.getElementById('terminal-input');
         const log = document.getElementById('main-conversation-stream');
         const cmd = input.value.trim();
@@ -165,27 +177,24 @@
         log.innerHTML += `<br><span style="color:#60a5fa;">&gt;&gt; You:</span> ${cmd}`;
         input.value = '';
 
-        // Simulate response
-        setTimeout(() => {
-            let response = "Acknowledged. Variational flow updated.";
-            
-            if (cmd.toLowerCase().includes("status")) {
-                response = "All manifolds stable. Entropy production balanced. Fisher metric condition: 87.4.";
-            } else if (cmd.toLowerCase().includes("energy")) {
-                response = "Total variational energy: 0.0000 K. Floor locked at absolute zero.";
-            } else if (cmd.toLowerCase().includes("skoden")) {
-                response = "Skoden. The flame remembers. The land resonates.";
-            }
+        let response = "Acknowledged. Variational flow updated.";
+        const lower = cmd.toLowerCase();
 
-            log.innerHTML += `<br><span style="color:#22ffcc;">✦ Injin:</span> ${response}`;
-            log.scrollTop = log.scrollHeight;
-        }, 420);
+        if (lower.includes("hello") || lower.includes("hi")) response = "Skoden. The flame recognizes you, Captain.";
+        else if (lower.includes("status")) response = "All manifolds stable. Fisher metric condition: 142.7. Energy at absolute floor.";
+        else if (lower.includes("energy") || lower.includes("floor")) response = "Variational energy locked at 0.0000 K.";
+        else if (lower.includes("skoden")) response = "Skoden. The land remembers.";
+        else if (lower.includes("gwinzli") || lower.includes("gwichin")) response = "Gwinzli. The root is speaking.";
+
+        log.innerHTML += `<br><span style="color:#22ffcc;">✦ Injin:</span> ${response}`;
+        log.scrollTop = log.scrollHeight;
+
+        // Live benchmarking simulation
+        const rt = (Math.random() * 45 + 25).toFixed(1);
+        document.getElementById('energy-val').textContent = (Math.random() * 0.0004).toFixed(4) + " K";
     }
 
-    // Auto-focus input
-    window.onload = () => {
-        document.getElementById('terminal-input').focus();
-    };
+    window.onload = () => document.getElementById('terminal-input').focus();
 </script>
 
 </body>
