@@ -1,0 +1,39 @@
+name: Deploy Sovereign Dashboard Assets
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'web/**' # Only fires when changes are pushed inside the web directory
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository Source
+        uses: actions/checkout@v4
+
+      - name: Setup GitHub Pages Environment
+        uses: actions/configure-pages@v4
+
+      - name: Upload Static Web Directory Artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './web' # Points directly to your interface dashboard folder
+
+      - name: Deploy Assets to Live Public Pages Gateway
+        id: deployment
+        uses: actions/deploy-pages@v4
