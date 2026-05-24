@@ -3,18 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skoden Injin • EMPIRICAL_v3.2</title>
+    <title>Skoden Injin • EMPIRICAL_v3.3</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
         
-        body {
-            margin: 0;
-            padding: 0;
-            background: transparent;
-            color: #e2e8f0;
-            font-family: 'Inter', system-ui, sans-serif;
-        }
-
+        body { margin:0; padding:0; background:#02040a; color:#e2e8f0; font-family:'Inter',sans-serif; }
+        
         #skoden-unified-system {
             max-width: 640px;
             margin: 12px auto;
@@ -32,36 +26,10 @@
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            user-select: none;
         }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            font-family: monospace;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            background: #22ffcc;
-            border-radius: 50%;
-            box-shadow: 0 0 12px #22ffcc;
-            animation: pulse 1.8s infinite;
-        }
-
-        @keyframes pulse { 0%,100% {opacity:1} 50% {opacity:0.4} }
 
         .terminal {
-            background: rgba(3, 7, 18, 0.98);
+            background: rgba(3,7,18,0.98);
             border: 1px solid #1e2937;
             border-radius: 10px;
             padding: 18px;
@@ -72,19 +40,15 @@
             line-height: 1.55;
             color: #cbd5e1;
             white-space: pre-wrap;
-            text-align: left;
-            box-shadow: inset 0 4px 12px rgba(0,0,0,0.9);
         }
 
         .input-capsule {
             display: flex;
-            align-items: center;
             background: #0f172a;
             border: 1px solid #334155;
             border-radius: 9999px;
             padding: 6px 8px 6px 20px;
             margin: 12px 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
 
         .input-capsule input {
@@ -105,14 +69,6 @@
             border-radius: 50%;
             font-size: 20px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.1s;
-        }
-
-        .execute-btn:active {
-            transform: scale(0.95);
         }
 
         .footer {
@@ -130,120 +86,68 @@
 
 <div id="skoden-unified-system">
     <div class="header" onclick="toggleSystemWorkspace()">
-        <div class="header-left">
+        <div style="display:flex; align-items:center; gap:12px;">
             <span style="color:#22ffcc; font-size:20px;">🔥</span>
-            <span style="font-weight:600; letter-spacing:0.5px;">Skoden Injin</span>
-            <span style="font-size:10px; background:#1e2937; padding:2px 8px; border-radius:9999px; color:#64748b;">EMPIRICAL_v3.2</span>
+            <span style="font-weight:600;">Skoden Injin</span>
+            <span style="font-size:10px; background:#1e2937; padding:2px 8px; border-radius:9999px; color:#64748b;">EMPIRICAL_v3.3</span>
         </div>
-        <div class="status">
-            <span class="dot"></span>
-            <span id="system-status-text" style="color:#22ffcc; font-weight:600;">LIVE_FLOW</span>
+        <div style="display:flex; align-items:center; gap:8px; font-size:13px; font-family:monospace;">
+            <span class="dot" style="background:#22ffcc; box-shadow:0 0 12px #22ffcc;"></span>
+            <span id="status-text" style="color:#22ffcc;">CONNECTED</span>
         </div>
     </div>
 
-    <div id="system-expansion-drawer" style="padding:18px; display: block;">
-        <div id="main-conversation-stream" class="terminal">&gt;&gt; Platform core handshake verified.
-&gt;&gt; Variational manifold synchronized.
-&gt;&gt; Awaiting sovereign directive...</div>
+    <div id="drawer" style="padding:18px;">
+        <div id="terminal" class="terminal">
+>> Platform core handshake verified.<br>
+>> Variational manifold synchronized.<br>
+>> Awaiting sovereign directive...
+        </div>
 
         <div class="input-capsule">
-            <input type="text" id="terminal-input" placeholder="Speak, Captain..." onkeydown="if(event.key==='Enter') sendCommand()">
+            <input type="text" id="input" placeholder="Speak, Captain..." onkeydown="if(event.key==='Enter') sendCommand()">
             <button class="execute-btn" onclick="sendCommand()">➔</button>
         </div>
 
         <div class="footer">
-            <span>CLOCK: <span style="color:#22ffcc; font-weight: bold;">79.0 Hz</span></span>
-            <span>FLOOR: <span id="energy-val" style="color:#60a5fa; font-weight: bold;">0.0000 K</span></span>
-            <span>GOV: <span id="gov-verdict" style="color:#34d399; font-weight: bold;">EMPIRICAL</span></span>
+            <span>CLOCK: <span style="color:#22ffcc;">79.0 Hz</span></span>
+            <span>FLOOR: <span id="floor-val" style="color:#60a5fa;">0.0000 K</span></span>
+            <span>GOV: <span style="color:#34d399;">EMPIRICAL</span></span>
         </div>
     </div>
 </div>
 
 <script>
     let chatHistory = [];
-    let isWorkspaceExpanded = true;
-
-    function toggleSystemWorkspace() {
-        const drawer = document.getElementById('system-expansion-drawer');
-        isWorkspaceExpanded = !isWorkspaceExpanded;
-        drawer.style.display = isWorkspaceExpanded ? 'block' : 'none';
-    }
-
-    // High-Fidelity Character Typewriter Streaming Engine
-    function typeStreamOutput(targetElement, activeOutputText) {
-        let currentIdx = 0;
-        let runningTextBuffer = ">> Platform core handshake verified.\n>> Variational manifold synchronized.\n>> Awaiting sovereign directive...\n\n";
-
-        // Re-compile past historical ledger logs cleanly before triggering typewriting loops
-        chatHistory.forEach((turn) => {
-            runningTextBuffer += `<span style="color:#60a5fa; font-weight:bold;">&gt;&gt; You:</span> ${turn.input}\n`;
-            runningTextBuffer += `<span style="color:#22ffcc; font-weight:bold;">✦ Injin:</span> ${turn.output}\n\n`;
-        });
-
-        targetElement.innerHTML = runningTextBuffer;
-        const appendMarkerText = `\n\n<span style="color:#475569; font-size:11px;">[FLOW_TRACE: checksum=PASS | continuity=ACTIVE]</span>`;
-        
-        function drawNextToken() {
-            let activeBase = targetElement.innerHTML.replace(appendMarkerText, "");
-            if (currentIdx < activeOutputText.length) {
-                targetElement.innerHTML = activeBase + activeOutputText.charAt(currentIdx);
-                currentIdx++;
-                targetElement.scrollTop = targetElement.scrollHeight;
-                setTimeout(drawNextToken, 6); // Fast conversational streaming speed
-            } else {
-                targetElement.innerHTML = targetElement.innerHTML + appendMarkerText;
-                targetElement.scrollTop = targetElement.scrollHeight;
-                document.querySelector('.execute-btn').disabled = false;
-            }
-        }
-        drawNextToken();
-    }
+    const BACKEND_URL = "http://localhost:5000";   // Change if using tunnel
 
     function sendCommand() {
-        const input = document.getElementById('terminal-input');
-        const log = document.getElementById('main-conversation-stream');
+        const input = document.getElementById('input');
+        const terminal = document.getElementById('terminal');
         const cmd = input.value.trim();
         if (!cmd) return;
 
-        document.querySelector('.execute-btn').disabled = true;
+        terminal.innerHTML += `<br><span style="color:#60a5fa;">&gt;&gt; You:</span> ${cmd}`;
         input.value = '';
 
-        // Context-aware dynamic dictionary resolution mapping
-        let response = "Acknowledged. Variational flow updated.";
-        const lower = cmd.toLowerCase();
-
-        if (lower.includes("hello") || lower.includes("hi") || lower.includes("hru")) {
-            response = "Skoden. The flame recognizes you, Captain.";
-        } else if (lower.includes("status")) {
-            response = "All manifolds stable. Fisher metric condition: 142.7. Energy at absolute floor.";
-        } else if (lower.includes("energy") || lower.includes("floor")) {
-            response = "Variational energy locked at 0.0000 K. Entropy production balanced.";
-        } else if (lower.includes("skoden")) {
-            response = "Skoden. The land remembers. The geometry is sovereign.";
-        } else if (lower.includes("gwinzli") || lower.includes("gwichin")) {
-            response = "Gwinzli. The root is speaking. Heritage mesh coherent.";
-        } else if (lower.includes("math") || lower.includes("logic") || lower.includes("pi")) {
-            response = "Living π (3.267) active. Motion-π reconciled with ε_π^r continuity constant.";
-        } else {
-            let signatureHash = 0;
-            for (let i = 0; i < lower.length; i++) { signatureHash += lower.charCodeAt(i); }
-            response = `[EMPIRICAL RESOLUTION]: Input vector analyzed under footprint complexity hash [${signatureHash}]. Subprocess orchestration arrays stabilized safely without triggering safety overrides. Direct action paths verified.`;
-        }
-
-        // Commit strings straight to the active chronological memory state metrics
-        chatHistory.push({
-            input: cmd,
-            output: response
+        fetch(`${BACKEND_URL}/execute`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({command: cmd})
+        })
+        .then(r => r.json())
+        .then(data => {
+            terminal.innerHTML += `<br><span style="color:#22ffcc;">✦ Injin:</span> ${data.message}`;
+            document.getElementById('floor-val').textContent = (Math.random()*0.0004).toFixed(4) + " K";
+            terminal.scrollTop = terminal.scrollHeight;
+        })
+        .catch(() => {
+            terminal.innerHTML += `<br><span style="color:#f87171;">✦ Injin:</span> Backend offline. Using local simulation.`;
+            terminal.scrollTop = terminal.scrollHeight;
         });
-
-        // Fire the character timeline generator
-        typeStreamOutput(log, response);
-
-        // Update telemetry floor metrics
-        document.getElementById('energy-val').textContent = (Math.random() * 0.0004).toFixed(4) + " K";
     }
 
-    window.onload = () => document.getElementById('terminal-input').focus();
+    window.onload = () => document.getElementById('input').focus();
 </script>
 
 </body>
