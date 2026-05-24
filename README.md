@@ -1,3 +1,13 @@
+A governance layer that sits between automated systems and users. When an AI or automated process wants to take an action, it has to pass through:
+Strawman — the free agent buffer. Tests the action against what a free, unencumbered person would reasonably accept. Not "what's the system default" — what would someone with full standing say yes to.
+Human-in-the-Loop weights — real human observation decisions that accumulate over time, building a weighted record of what this specific community of users actually sanctioned. Not assumed consent. Logged consent.
+Policy Governance Interceptor — hard stops. Overreach patterns, bias injection signatures, actions that exceed the mandate. No grace period. Dead-man switch.
+The problem it's solving:
+Most automated systems assume consent by default and ask forgiveness later. This flips it — the system has to prove it's within bounds before acting. The Strawman is the standing challenge: would a free person with full information agree to this?
+What makes it non-trivial:
+Bias injection isn't always obvious. It compounds — like tolerance stacking. Each small assumption, each default setting, each "acceptable" drift gets signed off. By the time you see the problem the stack is six layers deep and everyone's signature is on it.
+That's Tordial applied to governance, not just motors.
+
 # 🌌 Sovereign Flame Bloom Platform
 ## Multi-Agent Resonance Mesh Interface and Modular Microservice Orchestrator
 
