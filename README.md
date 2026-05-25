@@ -1,3 +1,23 @@
+# Sovereign Flame Bloom Platform
+
+A governance layer for multi-agent systems that enforces **explicit, logged consent** instead of assumed defaults.
+
+When an automated process or AI proposes an action, it must pass through three integrated safeguards:
+
+- **Strawman Buffer** — Evaluates the action against what a fully informed, unencumbered person would reasonably accept.
+- **Human-in-the-Loop Weights** — Accumulates real user decisions over time into a weighted record of sanctioned behaviors.
+- **Policy Governance Interceptor** — Applies hard constraints with zero-grace enforcement for boundary violations.
+
+### Core Purpose
+This platform provides structured, auditable control between users and increasingly autonomous systems. It combines local-first orchestration, policy evaluation, and resonance-based monitoring to maintain clear sovereignty boundaries.
+
+### Key Features
+- Local LLM integration (Ollama / vLLM) with vector memory fabric
+- Polyglot microservices (Python, Go, JavaScript) for telemetry and optimization
+- Weighted human precedent system with append-only observation logs
+- Modular policy rules (functional goals + rigid avoidances)
+- Machine fingerprinting and sovereign bridge verification
+- Adaptive drift monitoring hooks (ready for Synara Highmark integration)
 A governance layer that sits between automated systems and users. When an AI or automated process wants to take an action, it has to pass through:
 Strawman — the free agent buffer. Tests the action against what a free, unencumbered person would reasonably accept. Not "what's the system default" — what would someone with full standing say yes to.
 Human-in-the-Loop weights — real human observation decisions that accumulate over time, building a weighted record of what this specific community of users actually sanctioned. Not assumed consent. Logged consent.
