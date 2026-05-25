@@ -273,6 +273,57 @@ def platform_check():
     })
 
 
+@app.route("/chat", methods=["POST"])
+def chat_proxy():
+    """
+    Proxy route for Claude API.
+    Keeps the Anthropic API key server-side (set ANTHROPIC_API_KEY env var in Railway).
+    Browser sends messages here, Railway calls Anthropic, returns response.
+    """
+    api_key = os.getenv("ANTHROPIC_API_KEY", "")
+    if not api_key:
+        return jsonify({"error": "ANTHROPIC_API_KEY not set on server"}), 500
+
+    data = request.get_json(force=True)
+    messages = data.get("messages", [])
+    system = data.get("system", "You are a helpful assistant.")
+
+    if not messages:
+        return jsonify({"error": "No messages provided"}), 400
+
+    import urllib.request
+    import urllib.error
+
+    payload = json.dumps({
+        "model": "claude-sonnet-4-20250514",
+        "max_tokens": 1000,
+        "system": system,
+        "messages": messages
+    }).encode("utf-8")
+
+    req = urllib.request.Request(
+        "https://api.anthropic.com/v1/messages",
+        data=payload,
+        headers={
+            "Content-Type": "application/json",
+            "x-api-key": api_key,
+            "anthropic-version": "2023-06-01"
+        },
+        method="POST"
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            result = json.loads(resp.read().decode("utf-8"))
+            reply = result.get("content", [{}])[0].get("text", "No response.")
+            return jsonify({"reply": reply})
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8")
+        return jsonify({"error": f"Anthropic API error: {e.code}", "detail": body}), 502
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
