@@ -279,7 +279,16 @@ def chat_proxy():
     Proxy route for Claude API.
     Keeps the Anthropic API key server-side (set ANTHROPIC_API_KEY env var in Railway).
     Browser sends messages here, Railway calls Anthropic, returns response.
+    Set CHAT_TOKEN env var in Railway to require a token from callers.
     """
+    # ── optional access token check ──────────────────────────────────────────
+    chat_token = os.getenv("CHAT_TOKEN", "")
+    if chat_token:
+        auth_header = request.headers.get("X-Chat-Token", "")
+        body_token  = (request.get_json(force=True, silent=True) or {}).get("token", "")
+        if auth_header != chat_token and body_token != chat_token:
+            return jsonify({"error": "Unauthorized"}), 401
+
     api_key = os.getenv("ANTHROPIC_API_KEY", "")
     if not api_key:
         return jsonify({"error": "ANTHROPIC_API_KEY not set on server"}), 500
