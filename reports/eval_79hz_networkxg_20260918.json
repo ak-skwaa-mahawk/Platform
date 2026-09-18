@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-09-18T08:58:00Z",
+  "commit": "092e5a2",
+  "tag": "v1.1.0-79hz-networkxg",
+  "target_hz": 79.0,
+  "results": {
+    "total_cycles": 79,
+    "elapsed_seconds": 2.96,
+    "applied_actions": 78,
+    "denied_actions": 1,
+    "boundary_trip_cycle": 30,
+    "pid_damping_equilibrium": 0.349,
+    "pid_damping_peak_trip": 0.932,
+    "substrate_seq_start": 2202,
+    "substrate_seq_end": 2343
+  },
+  "topology_observer": {
+    "engine": "networkXG.SovereignRelationalMesh",
+    "networkx_version": "3.6.1",
+    "dag_nodes": 79,
+    "acyclic_invariant_held": true,
+    "monotonic_sequence_held": true
+  }
+}
