@@ -2,3 +2,4 @@ audit_log.jsonl
 __pycache__/
 *.pyc
 .pytest_cache/
+CURRENT_STATE.json
