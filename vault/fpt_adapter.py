@@ -26,7 +26,7 @@ class FPTIPCClientAdapter(VaultClient):
         sovereign_id: str = "platform_79hz_agent",
         authority_tag: str = "authority:human_in_the_loop",
         base_drive: float = 0.50,
-        timeout: float = 0.05,
+        timeout: float = 0.5,
         context_window: int = 10,
         fail_open: bool = False,
     ) -> None:
@@ -132,7 +132,7 @@ class FPTIPCClientAdapter(VaultClient):
                     self.latest_egress_receipt = expected_anchor
                     het_res = _dispatch_with_anchor(self.latest_egress_receipt)
 
-            if het_res.get("status") == "ACCEPTED":
+            if het_res.get("status") == "ACCEPTED" or "egress_receipt" in het_res:
                 lineage_val = het_res.get("lineage")
                 if isinstance(lineage_val, dict):
                     self.latest_egress_receipt = lineage_val.get("egress_receipt") or lineage_val.get("anchor") or self.latest_egress_receipt
