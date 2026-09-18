@@ -1,3 +1,4 @@
+from vault.graph import StateTopologyObserver
 import sys
 import os
 import time
@@ -51,6 +52,7 @@ loop_module.apply_action = apply_action
 
 client = VaultClient.from_uds(timeout=0.75)
 state = ProductionPlatformState()
+obs = StateTopologyObserver()
 buffer = []
 
 print("[*] Dispatching 79 cycles across Platform loop_79hz -> FPT -> Heterosis...")
@@ -59,6 +61,15 @@ t_start = time.time()
 for t in range(79):
     t0 = time.time()
     state = loop_module.tick(state, client, buffer)
+    if client.latest_substrate_seq is not None:
+        ok, reason, gstats = obs.record_transition(
+            action_id=f"tick_{t:03d}",
+            seq=client.latest_substrate_seq,
+            damping=client.latest_damping,
+            anchor=getattr(client, "latest_egress_receipt", "none") or "none"
+        )
+        if not ok:
+            print(f"[!] Topology invariant violation at tick {t}: {reason}")
     dt = (time.time() - t0) * 1000.0
     if t % 10 == 0 or t in (30, 31):
         print(
