@@ -18,6 +18,7 @@ from vault.schemas import (
     MetricSnapshot,
 )
 
+
 log = logging.getLogger(__name__)
 
 
@@ -47,6 +48,11 @@ class VaultClient:
         self._session = requests.Session()   # connection pooling across ticks
 
     # ── Factory ────────────────────────────────────────────────────────────────
+    @classmethod
+    def from_uds(cls, **kwargs):
+        from vault.fpt_adapter import FPTIPCClientAdapter
+        return FPTIPCClientAdapter(**kwargs)
+
 
     @classmethod
     def from_config(cls, path: str) -> "VaultClient":
