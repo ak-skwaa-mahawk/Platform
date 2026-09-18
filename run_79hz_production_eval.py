@@ -55,29 +55,34 @@ state = ProductionPlatformState()
 obs = StateTopologyObserver()
 buffer = []
 
-print("[*] Dispatching 79 cycles across Platform loop_79hz -> FPT -> Heterosis...")
-t_start = time.time()
 
-for t in range(79):
-    t0 = time.time()
-    state = loop_module.tick(state, client, buffer)
-    if client.latest_substrate_seq is not None:
-        ok, reason, gstats = obs.record_transition(
-            action_id=f"tick_{t:03d}",
-            seq=client.latest_substrate_seq,
-            damping=client.latest_damping,
-            anchor=getattr(client, "latest_egress_receipt", "none") or "none"
-        )
-        if not ok:
-            print(f"[!] Topology invariant violation at tick {t}: {reason}")
-    dt = (time.time() - t0) * 1000.0
-    if t % 10 == 0 or t in (30, 31):
-        print(
-            f"Tick {t:2d} | dt={dt:5.2f}ms | Damping={client.latest_damping:.3f} | "
-            f"Substrate Seq={client.latest_substrate_seq} | Applied={len(state.applied)} | Denied={len(state.denied)}"
-        )
-    time.sleep(0.012)
+def main():
+    print("[*] Dispatching 79 cycles across Platform loop_79hz -> FPT -> Heterosis...")
+    t_start = time.time()
+    
+    for t in range(79):
+        t0 = time.time()
+        state = loop_module.tick(state, client, buffer)
+        if client.latest_substrate_seq is not None:
+            ok, reason, gstats = obs.record_transition(
+                action_id=f"tick_{t:03d}",
+                seq=client.latest_substrate_seq,
+                damping=client.latest_damping,
+                anchor=getattr(client, "latest_egress_receipt", "none") or "none"
+            )
+            if not ok:
+                print(f"[!] Topology invariant violation at tick {t}: {reason}")
+        dt = (time.time() - t0) * 1000.0
+        if t % 10 == 0 or t in (30, 31):
+            print(
+                f"Tick {t:2d} | dt={dt:5.2f}ms | Damping={client.latest_damping:.3f} | "
+                f"Substrate Seq={client.latest_substrate_seq} | Applied={len(state.applied)} | Denied={len(state.denied)}"
+            )
+        time.sleep(0.012)
+    
+    total_elapsed = time.time() - t_start
+    print(f"\n[+] Completed 79 cycles in {total_elapsed:.2f}s.")
+    print(f"[+] Total Applied: {len(state.applied)} | Total Denied: {len(state.denied)}")
 
-total_elapsed = time.time() - t_start
-print(f"\n[+] Completed 79 cycles in {total_elapsed:.2f}s.")
-print(f"[+] Total Applied: {len(state.applied)} | Total Denied: {len(state.denied)}")
+if __name__ == "__main__":
+    main()
