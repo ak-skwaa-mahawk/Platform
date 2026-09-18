@@ -29,7 +29,6 @@ class ProductionPlatformState(loop_module.PlatformState):
 
 def propose_actions(state, metrics):
     idx = len(state.applied) + len(state.denied)
-    # Trip boundary protection on cycle 30
     if idx == 30:
         return [ActionProposal(
             action_id=f"eval_act_{idx:03d}",
@@ -50,16 +49,15 @@ def apply_action(state, action: ActionProposal):
 loop_module.propose_actions = propose_actions
 loop_module.apply_action = apply_action
 
-client = VaultClient.from_uds(timeout=0.75)
-state = ProductionPlatformState()
-obs = StateTopologyObserver()
-buffer = []
-
-
 def main():
+    client = VaultClient.from_uds(timeout=0.75)
+    state = ProductionPlatformState()
+    obs = StateTopologyObserver()
+    buffer = []
+
     print("[*] Dispatching 79 cycles across Platform loop_79hz -> FPT -> Heterosis...")
     t_start = time.time()
-    
+
     for t in range(79):
         t0 = time.time()
         state = loop_module.tick(state, client, buffer)
@@ -79,7 +77,7 @@ def main():
                 f"Substrate Seq={client.latest_substrate_seq} | Applied={len(state.applied)} | Denied={len(state.denied)}"
             )
         time.sleep(0.012)
-    
+
     total_elapsed = time.time() - t_start
     print(f"\n[+] Completed 79 cycles in {total_elapsed:.2f}s.")
     print(f"[+] Total Applied: {len(state.applied)} | Total Denied: {len(state.denied)}")
